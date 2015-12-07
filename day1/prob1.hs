@@ -1,6 +1,3 @@
-import Control.Monad
-import Data.Char
-
 
 
 negfloor :: String -> Int -> Int -> Int

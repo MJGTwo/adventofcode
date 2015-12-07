@@ -1,5 +1,3 @@
-import Control.Monad
-import Data.Char
 
 
 countLetters :: String -> Char -> Int
