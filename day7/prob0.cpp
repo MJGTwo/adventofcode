@@ -173,19 +173,28 @@ public:
           string find = (itr0->info)[j];
           cout << itr0->name << " LOOKING FOR: " << find << endl;
           Node * itr1 = head;
-
-          for (int k =0; k < size; k++)
+          if (isdigit((itr0->info)[j][0]))
           {
-            //cout << (itr1->name) << endl;
-            if ((itr1->name) == find)
-            {
-              if (j == 0) itr0->rule1 = itr1;
-              else itr0->rule2 = itr1;
-              if (j ==0 && i ==1) cout << "HERE: " <<itr1->name << endl;
-              break;
-            }
-            itr1 = itr1->next;
+            Node * n = new Node((itr0->info)[j],atoi((itr0->info)[j]));
+            if (j == 0) itr0->rule1 = itr1;
+            else itr0->rule2 = itr1;
           }
+          else
+          {
+            for (int k =0; k < size; k++)
+            {
+              //cout << (itr1->name) << endl;
+              if ((itr1->name) == find)
+              {
+                if (j == 0) itr0->rule1 = itr1;
+                else itr0->rule2 = itr1;
+                if (j ==0 && i ==1) cout << "HERE: " <<itr1->name << endl;
+                break;
+              }
+              itr1 = itr1->next;
+            }
+          }
+
         }
       }
       itr0= itr0->next;
@@ -252,7 +261,19 @@ public:
       }
     }
   }
+  int find(string name)
+  {
+    Node * finder = head;
+    for (int i =0; i < size; i++)
+    {
+      if (finder->name == name)
+      {
+        return finder->val;
+      }
+      finder=finder->next;
+    }
 
+  }
   Node * start() const {return  head;}
   Node * end() const {return tail;}
 
@@ -279,6 +300,7 @@ int main()
   l.link();
   l.solve();
 
+  cout << "answer: " << l.find("a") << endl;
 
 
 }
