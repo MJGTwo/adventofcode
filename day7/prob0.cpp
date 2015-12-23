@@ -60,6 +60,8 @@ public:
     next = NULL;
     prev = NULL;
     answer = true;
+    rule1 =NULL;
+    rule2 = NULL;
   }
   Node(string n, vector<string> relation): name(n)
   {
@@ -93,7 +95,8 @@ public:
     }
     next = NULL;
     prev = NULL;
-    nodes = NULL;
+    rule1 = NULL;
+    rule2 = NULL;
     //cout << "done!" << endl;
   }
 
@@ -102,10 +105,11 @@ public:
   string name;
   int val;
   vector<string> info;
-  Node*** nodes;
   string op;
   Node *next;
   Node *prev;
+  Node *rule1;
+  Node *rule2;
 
   bool answer;
 
@@ -163,44 +167,28 @@ public:
       if (!(itr0->answer))
       {
         //cout << itr0->op <<endl;
-        if ((itr0->op)!= "RSHIFT" && (itr0->op) != "LSHIFT")
+        for (int j =0; j < (itr0->info).size(); j++)
         {
-          itr0->nodes = new Node**[2];
-          for (int j =0; j < (itr0->info).size(); j++)
-          {
-            //cout << "SIZE: " << size << endl;
-            string find = (itr0->info)[j];
-            //cout << "LOOK: " << find << endl;
-            Node * itr1 = head;
-
-            for (int k =0; k < size; k++)
-            {
-              //cout << (itr1->name) << endl;
-              if ((itr1->name) == find)
-              {
-                *(itr0->nodes+j) = &itr1;
-                //cout << "found!" << endl;
-                break;
-              }
-              itr1 = itr1->next;
-            }
-          }
-        }
-        else
-        {
-          itr0->nodes = new Node**[1];
+          //cout << "SIZE: " << size << endl;
+          string find = (itr0->info)[j];
+          cout << itr0->name << " LOOKING FOR: " << find << endl;
           Node * itr1 = head;
+
           for (int k =0; k < size; k++)
           {
-            if ((itr1->name) == (itr0->info)[0])
+            //cout << (itr1->name) << endl;
+            if ((itr1->name) == find)
             {
-              *(itr0->nodes) = &itr1;
+              if (j == 0) itr0->rule1 = itr1;
+              else itr0->rule2 = itr1;
+              if (j ==0 && i ==1) cout << "HERE: " <<itr1->name << endl;
               break;
             }
-            itr1= itr1->next;
+            itr1 = itr1->next;
           }
         }
       }
+      itr0= itr0->next;
     }
   }
 
@@ -215,38 +203,41 @@ public:
       while (i < size)
       {
         cout << itr->name << "\t" << i << endl;
-        cout << (*(*(itr->nodes)))->name << endl;
         if (!(itr->answer))
         {
-          cout << "yes" <<endl;
-          if (itr->op == "NOT" && (*(*(itr->nodes)))->answer)
+          cout << "test0" << endl;
+          if (itr->op == "NOT" || itr->op == "RSHIFT" || itr->op == "LSIGHT")
           {
-            cout << "#0" << endl;
-            itr->val = ~(*(*(itr->nodes)))->val;
+            cout << "test1" << endl;
+            cout << (itr->rule1)->answer << endl;
+            if (itr->op == "NOT" && (itr->rule1)->answer)
+            {
+              cout << "test2" << endl;
+              itr->val = ~((itr->rule1)->val);
+              itr->answer = true;
+            }
+            else if ((itr->rule1)->answer)
+            {
+              if (itr->op == "RSHIFT")
+              {
+                itr->val = ((itr->rule1)->val) >> atoi(itr->info[1]);
+                itr->answer = true;
+              }
+              else
+              {
+                itr->val = ((itr->rule1)->val) << atoi(itr->info[1]);
+                itr->answer = true;
+              }
+            }
+          }
+          else if (itr->op == "AND" && (itr->rule1)->answer && (itr->rule2)->answer)
+          {
+            itr->val = (itr->rule1)->val & (itr->rule2)->val;
             itr->answer = true;
           }
-          else if (itr->op == "AND" && (*(*(itr->nodes)))->answer && (*(*(itr->nodes+1)))->answer)
+          else if (itr->op == "OR" && (itr->rule1)->answer && (itr->rule2)->answer)
           {
-            cout << "#1" << endl;
-            itr->val = (*(*(itr->nodes)))->val & (*(*(itr->nodes+1)))->val;
-            itr->answer = true;
-          }
-          else if (itr->op == "OR" && (*(*(itr->nodes)))->answer && (*(*(itr->nodes+1)))->answer)
-          {
-            cout << "#2" << endl;
-            itr->val = (*(*(itr->nodes)))->val | (*(*(itr->nodes+1)))->val;
-            itr->answer = true;
-          }
-          else if (itr->op == "RSHIFT" && (*(*(itr->nodes)))->answer)
-          {
-            cout << "#3" << endl;
-            itr->val = (*(*(itr->nodes)))->val << atoi(itr->info[1]);
-            itr->answer = true;
-          }
-          else if (itr->op == "LSHIFT" && (*(*(itr->nodes)))->answer)
-          {
-            cout << "#4" << endl;
-            itr->val = (*(*(itr->nodes)))->val >> atoi(itr->info[1]);
+            itr->val = (itr->rule1)->val | (itr->rule2)->val;
             itr->answer = true;
           }
 
