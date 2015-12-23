@@ -10,6 +10,6 @@ negfloor str@(x:xs) c f
 
 
 main =  do
-    putStr "Give me some input: "
+    putStr "Your answer: "
     l <- getLine
     print (negfloor l 0 0)

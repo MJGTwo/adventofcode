@@ -9,16 +9,18 @@ fact(lshift(X,Y,Z))--> [X, "LSHIFT", Y, "->", Z].
 fact(rshift(X,Y,Z))--> [X, "RSHIFT", Y, "->", Z].
 
 
-calc((Z = (X/\Y)) ,and(X,Y,Z)).
-calc((X = Y)      ,assign(X,Y) ).
-calc((Z = (X\/Y)) ,or(X,Y,Z)).
-calc((Y = \X)     ,not(X,Y)).
-calc((Z =(X << Y)),lshift(X,Y,Z)).
-calc((Z =(X >> Y)),rshift(X,Y,Z)).
+calc(num(Z is (X/\Y)) ,and(X,Y,Z)).
+calc(num(X is  Y)      ,assign(X,Y) ).
+calc(num(Z is  (X\/Y)) ,or(X,Y,Z)).
+calc(num(Y is  \X)     ,not(X,Y)).
+calc(num(Z is (X << Y)),lshift(X,Y,Z)).
+calc(num(Z is (X >> Y)),rshift(X,Y,Z)).
+
 
 
 query(question(Q)) --> [Q,'?'].
-tell(write(Q)):-  question(Q).
+tell(question(Q)):-  num(Q), !, write(Q).
+tell(question(_)):- write(no).
 
 
 
