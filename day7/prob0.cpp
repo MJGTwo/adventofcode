@@ -159,27 +159,27 @@ public:
     Node * itr0 = head;
     for (int i =0; i < size; i++)
     {
-      cout << i << endl;
+      //cout << i << endl;
       if (!(itr0->answer))
       {
-        cout << itr0->op <<endl;
+        //cout << itr0->op <<endl;
         if ((itr0->op)!= "RSHIFT" && (itr0->op) != "LSHIFT")
         {
           itr0->nodes = new Node**[2];
           for (int j =0; j < (itr0->info).size(); j++)
           {
-            cout << "SIZE: " << size << endl;
+            //cout << "SIZE: " << size << endl;
             string find = (itr0->info)[j];
-            cout << "LOOK: " << find << endl;
+            //cout << "LOOK: " << find << endl;
             Node * itr1 = head;
 
             for (int k =0; k < size; k++)
             {
-              cout << (itr1->name) << endl;
+              //cout << (itr1->name) << endl;
               if ((itr1->name) == find)
               {
                 *(itr0->nodes+j) = &itr1;
-                cout << "found!" << endl;
+                //cout << "found!" << endl;
                 break;
               }
               itr1 = itr1->next;
@@ -231,20 +231,16 @@ public:
             itr->val = (*(*(itr->nodes)))->val | (*(*(itr->nodes+1)))->val;
             itr->answer = true;
           }
-          else if (itr->op == "RSHIFT")
+          else if (itr->op == "RSHIFT" && (*(*(itr->nodes)))->answer)
           {
             itr->val = (*(*(itr->nodes)))->val << atoi(itr->info[1]);
             itr->answer = true;
           }
-          else if (itr->op == "LSHIFT")
+          else if (itr->op == "LSHIFT" && (*(*(itr->nodes)))->answer)
           {
             itr->val = (*(*(itr->nodes)))->val >> atoi(itr->info[1]);
             itr->answer = true;
           }
-
-
-
-
 
           if (itr->answer)
           {
@@ -279,20 +275,10 @@ int main()
   {
     names.push_back(rules[i].back());
     rules[i].pop_back();
-    /*
-    for (int j =0 ; j < rules[i].size(); j++)
-    {
-      cout << rules[i][j] << " ";
-    }
-    cout << names[i] << endl;
-    cout << i << "\t" << rules.size()-1 << endl;
-    */
     l.add( new Node(names[i],rules[i]));
-
-
   }
   l.link();
-  
+  l.solve();
 
 
 
