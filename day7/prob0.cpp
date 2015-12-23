@@ -214,30 +214,38 @@ public:
       int i=0;
       while (i < size)
       {
+        cout << itr->name << "\t" << i << endl;
+        cout << (*(*(itr->nodes)))->name << endl;
         if (!(itr->answer))
         {
+          cout << "yes" <<endl;
           if (itr->op == "NOT" && (*(*(itr->nodes)))->answer)
           {
+            cout << "#0" << endl;
             itr->val = ~(*(*(itr->nodes)))->val;
             itr->answer = true;
           }
           else if (itr->op == "AND" && (*(*(itr->nodes)))->answer && (*(*(itr->nodes+1)))->answer)
           {
+            cout << "#1" << endl;
             itr->val = (*(*(itr->nodes)))->val & (*(*(itr->nodes+1)))->val;
             itr->answer = true;
           }
           else if (itr->op == "OR" && (*(*(itr->nodes)))->answer && (*(*(itr->nodes+1)))->answer)
           {
+            cout << "#2" << endl;
             itr->val = (*(*(itr->nodes)))->val | (*(*(itr->nodes+1)))->val;
             itr->answer = true;
           }
           else if (itr->op == "RSHIFT" && (*(*(itr->nodes)))->answer)
           {
+            cout << "#3" << endl;
             itr->val = (*(*(itr->nodes)))->val << atoi(itr->info[1]);
             itr->answer = true;
           }
           else if (itr->op == "LSHIFT" && (*(*(itr->nodes)))->answer)
           {
+            cout << "#4" << endl;
             itr->val = (*(*(itr->nodes)))->val >> atoi(itr->info[1]);
             itr->answer = true;
           }
