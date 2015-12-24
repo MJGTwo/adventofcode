@@ -137,11 +137,61 @@ vector<string> convert(vector<string> info, string op)
   }
 }
 
+void solve(table &w)
+{
+
+    bool change = true;
+    while (change){
+      change = !change;
+      for (table::iterator itr=w.begin(); itr != w.end(); ++itr)
+      {
+        //cout << itr->first << endl;
+
+
+
+        if ((itr->second).second == "NUM")
+        {
+          cout << (itr->first) << ":\t";
+          for (int i =0; i < (itr->second).first.size(); i++)
+          {
+            cout << ((itr->second).first)[i] << " ";
+          }
+          cout << endl;
+          for (table::iterator finder=w.begin(); finder != w.end(); ++finder)
+          {
+            pair<vector<string>, string> facts = finder->second;
+            vector<string> vals = facts.first;
+            for (int i =0; i < vals.size(); i++)
+            {
+              if (vals[i] == itr->first) vals[i] = ((itr->second).first)[0];
+            }
+            facts.first = vals;
+            finder->second = facts;
+            bool allnum = true;
+            for (int i=0;i < vals.size(); i++)
+            {
+              if (!isdigit(vals[i][0])) allnum=false;
+            }
+            if (allnum && (finder->second).second != "NUM")
+            {
+              change = true;
+              cout << (finder->second).second << endl;
+              facts.first = convert(vals,(finder->second).second);
+              finder->second = facts;
+              (finder->second).second = "NUM";
+            }
+          }
+        }
+      }
+      cout <<"*****************" << endl;
+    }
+}
 
 int main()
 {
   vector<vector<string> > rules = parse("input0.txt");
   table wires;
+  table wires2;
   for (int i =0; i < rules.size(); i++)
   {
     string name;
@@ -169,53 +219,13 @@ int main()
     p.first = vals;
     p.second = op;
     wires.insert(entry(name,p));
+    wires2.insert(entry(name,p));
   }
-
-  bool change = true;
-  while (change){
-    change = !change;
-    for (table::iterator itr=wires.begin(); itr != wires.end(); ++itr)
-    {
-      //cout << itr->first << endl;
-
-
-
-      if ((itr->second).second == "NUM")
-      {
-        cout << (itr->first) << ":\t";
-        for (int i =0; i < (itr->second).first.size(); i++)
-        {
-          cout << ((itr->second).first)[i] << " ";
-        }
-        cout << endl;
-        for (table::iterator finder=wires.begin(); finder != wires.end(); ++finder)
-        {
-          pair<vector<string>, string> facts = finder->second;
-          vector<string> vals = facts.first;
-          for (int i =0; i < vals.size(); i++)
-          {
-            if (vals[i] == itr->first) vals[i] = ((itr->second).first)[0];
-          }
-          facts.first = vals;
-          finder->second = facts;
-          bool allnum = true;
-          for (int i=0;i < vals.size(); i++)
-          {
-            if (!isdigit(vals[i][0])) allnum=false;
-          }
-          if (allnum && (finder->second).second != "NUM")
-          {
-            change = true;
-            cout << (finder->second).second << endl;
-            facts.first = convert(vals,(finder->second).second);
-            finder->second = facts;
-            (finder->second).second = "NUM";
-          }
-        }
-      }
-    }
-    cout <<"*****************" << endl;
-  }
+  solve(wires);
   cout << ((wires.find("a")->second).first)[0] << endl;
+  ((wires2.find("b")->second).first)[0] = ((wires.find("a")->second).first)[0];
+
+  solve(wires2);
+  cout << ((wires2.find("a")->second).first)[0] << endl;
 
 }
