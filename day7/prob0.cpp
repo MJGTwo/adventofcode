@@ -17,7 +17,7 @@ vector<vector<string> > parse(string name)
     {
       vector<string> temp;
       string word = "";
-      for (int i =0; i < line.size(); i++)
+      for (uint16_t i =0; i < line.size(); i++)
       {
         if (line[i] == ' ')
         {
@@ -40,10 +40,10 @@ vector<vector<string> > parse(string name)
 
 }
 
-int atoi(string val)
+uint16_t atoi(string val)
 {
-  int result = 0;
-  for (int i =0;i < val.size();i++)
+  uint16_t result = 0;
+  for (uint16_t i =0;i < val.size();i++)
   {
     result = result * 10;
     result += (val[i]-'0');
@@ -55,7 +55,7 @@ int atoi(string val)
 class Node
 {
 public:
-  Node(string n, int v): name(n),val(v)
+  Node(string n, uint16_t v): name(n),val(v)
   {
     next = NULL;
     prev = NULL;
@@ -103,7 +103,7 @@ public:
 
 
   string name;
-  int val;
+  uint16_t val;
   vector<string> info;
   string op;
   Node *next;
@@ -156,18 +156,18 @@ public:
       n = NULL;
     }
   }
-  int num(){return size;}
+  uint16_t num(){return size;}
 
   void link()
   {
     Node * itr0 = head;
-    for (int i =0; i < size; i++)
+    for (uint16_t i =0; i < size; i++)
     {
       //cout << i << endl;
       if (!(itr0->answer))
       {
         //cout << itr0->op <<endl;
-        for (int j =0; j < (itr0->info).size(); j++)
+        for (uint16_t j =0; j < (itr0->info).size(); j++)
         {
           //cout << "SIZE: " << size << endl;
           string find = (itr0->info)[j];
@@ -175,15 +175,15 @@ public:
           Node * itr1 = head;
           if (isdigit((itr0->info)[j][0]))
           {
-            static Node * n = new Node((itr0->info)[j],atoi((itr0->info)[j]));
+            Node * n = new Node((itr0->info)[j],atoi((itr0->info)[j]));
             cout <<"NAME: "<<(itr0->name)<< " VALUE: " << n->val << endl;
 
-            if (j == 0) itr0->rule1 = itr1;
-            else itr0->rule2 = itr1;
+            if (j == 0) itr0->rule1 = n;
+            else itr0->rule2 = n;
           }
           else
           {
-            for (int k =0; k < size; k++)
+            for (uint16_t k =0; k < size; k++)
             {
               //cout << (itr1->name) << endl;
               if ((itr1->name) == find)
@@ -210,7 +210,7 @@ public:
     {
       change = false;
       Node * itr = head;
-      int i=0;
+      uint16_t i=0;
       while (i < size)
       {
         //cout << itr->name << "\t" << i << endl;
@@ -230,36 +230,21 @@ public:
             if (itr->op == "NOT" && (itr->rule1)->answer)
             {
               //cout << "test2" << endl;
-              if (isdigit((itr->info)[0][0]))
-              {
-                itr->val = ~(atoi(itr->info[0]));
-              }
-              else
-              {
-                itr->val = ~((itr->rule1)->val);
-              }
+
+              itr->val = ~((itr->rule1)->val);
 
               itr->answer = true;
             }
             else if ((itr->rule1)->answer)
             {
-              int shift;
-              if (isdigit((itr->info)[1][0]))
-              {
-                shift = atoi((itr->info)[0]);
-              }
-              else
-              {
-                shift = (itr->rule2)->val;
-              }
               if (itr->op == "RSHIFT")
               {
-                itr->val = ((itr->rule1)->val) >> shift;
+                itr->val = ((itr->rule1)->val) >> (itr->rule2)->val;
                 itr->answer = true;
               }
               else
               {
-                itr->val = ((itr->rule1)->val) << shift;
+                itr->val = ((itr->rule1)->val) << (itr->rule2)->val;
                 itr->answer = true;
               }
             }
@@ -298,10 +283,10 @@ public:
       }
     }
   }
-  int find(string name)
+  uint16_t find(string name)
   {
     Node * finder = head;
-    for (int i =0; i < size; i++)
+    for (uint16_t i =0; i < size; i++)
     {
       if (finder->name == name)
       {
@@ -317,7 +302,7 @@ public:
 private:
   Node * head;
   Node * tail;
-  int size;
+  uint16_t size;
 };
 
 
@@ -328,7 +313,7 @@ int main()
   vector<vector<string> > rules = parse("input0.txt");
   vector<string> names;
   LinkedNodes l;
-  for (int i =0; i < rules.size(); i++)
+  for (uint16_t i =0; i < rules.size(); i++)
   {
     names.push_back(rules[i].back());
     rules[i].pop_back();
@@ -338,9 +323,9 @@ int main()
   l.solve();
 
   Node * itr = l.start();
-  for (int i =0; i < l.num(); i++)
+  for (uint16_t i =0; i < l.num(); i++)
   {
-    //cout << itr->name << ":\t"<< itr->val <<endl;
+    cout << itr->name << ":\t"<< itr->val <<endl;
     itr=itr->next;
     if (itr->name == "e")
     {
