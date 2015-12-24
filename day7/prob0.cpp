@@ -171,11 +171,13 @@ public:
         {
           //cout << "SIZE: " << size << endl;
           string find = (itr0->info)[j];
-          cout << itr0->name << " LOOKING FOR: " << find << endl;
+          //cout << itr0->name << " LOOKING FOR: " << find << endl;
           Node * itr1 = head;
           if (isdigit((itr0->info)[j][0]))
           {
-            Node * n = new Node((itr0->info)[j],atoi((itr0->info)[j]));
+            static Node * n = new Node((itr0->info)[j],atoi((itr0->info)[j]));
+            cout <<"NAME: "<<(itr0->name)<< " VALUE: " << n->val << endl;
+
             if (j == 0) itr0->rule1 = itr1;
             else itr0->rule2 = itr1;
           }
@@ -188,7 +190,7 @@ public:
               {
                 if (j == 0) itr0->rule1 = itr1;
                 else itr0->rule2 = itr1;
-                if (j ==0 && i ==1) cout << "HERE: " <<itr1->name << endl;
+                //if (j ==0 && i ==1) cout << "HERE: " <<itr1->name << endl;
                 break;
               }
               itr1 = itr1->next;
@@ -211,48 +213,83 @@ public:
       int i=0;
       while (i < size)
       {
-        cout << itr->name << "\t" << i << endl;
+        //cout << itr->name << "\t" << i << endl;
         if (!(itr->answer))
         {
-          cout << "test0" << endl;
+          //cout << "test0" << endl;
+          cout << itr->name << "\t" << itr->op << ":\t" <<(itr->rule1)->name;
+          if (itr->name == "e")
+          {
+            cout << "testtesttest " << (itr->rule1)->val << " " <<  (itr->rule2)->val << endl;
+          }
           if (itr->op == "NOT" || itr->op == "RSHIFT" || itr->op == "LSIGHT")
           {
-            cout << "test1" << endl;
-            cout << (itr->rule1)->answer << endl;
+            //cout << "test1" << endl;
+            //cout << (itr->rule1)->answer << endl;
+            cout << endl;
             if (itr->op == "NOT" && (itr->rule1)->answer)
             {
-              cout << "test2" << endl;
-              itr->val = ~((itr->rule1)->val);
+              //cout << "test2" << endl;
+              if (isdigit((itr->info)[0][0]))
+              {
+                itr->val = ~(atoi(itr->info[0]));
+              }
+              else
+              {
+                itr->val = ~((itr->rule1)->val);
+              }
+
               itr->answer = true;
             }
             else if ((itr->rule1)->answer)
             {
+              int shift;
+              if (isdigit((itr->info)[1][0]))
+              {
+                shift = atoi((itr->info)[0]);
+              }
+              else
+              {
+                shift = (itr->rule2)->val;
+              }
               if (itr->op == "RSHIFT")
               {
-                itr->val = ((itr->rule1)->val) >> atoi(itr->info[1]);
+                itr->val = ((itr->rule1)->val) >> shift;
                 itr->answer = true;
               }
               else
               {
-                itr->val = ((itr->rule1)->val) << atoi(itr->info[1]);
+                itr->val = ((itr->rule1)->val) << shift;
                 itr->answer = true;
               }
             }
           }
           else if (itr->op == "AND" && (itr->rule1)->answer && (itr->rule2)->answer)
           {
+            cout << "\t" <<(itr->rule2)->name<<endl;
             itr->val = (itr->rule1)->val & (itr->rule2)->val;
             itr->answer = true;
           }
           else if (itr->op == "OR" && (itr->rule1)->answer && (itr->rule2)->answer)
           {
+            cout << "\t" <<(itr->rule2)->name<<endl;
             itr->val = (itr->rule1)->val | (itr->rule2)->val;
+            itr->answer = true;
+          }
+          else if (itr->op == "SAME" && (itr->rule1)->answer)
+          {
+            cout << endl;
+            itr->val = (itr->rule1)->val;
             itr->answer = true;
           }
 
           if (itr->answer)
           {
             change = true;
+          }
+          else
+          {
+            cout << endl;
           }
         }
 
@@ -300,7 +337,16 @@ int main()
   l.link();
   l.solve();
 
-  cout << "answer: " << l.find("a") << endl;
-
+  Node * itr = l.start();
+  for (int i =0; i < l.num(); i++)
+  {
+    //cout << itr->name << ":\t"<< itr->val <<endl;
+    itr=itr->next;
+    if (itr->name == "e")
+    {
+      cout << itr->op << " "<<(itr->rule2)->val<< endl;
+    }
+  }
+  cout << "a: " << l.find("a") << endl;
 
 }
