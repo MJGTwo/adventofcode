@@ -4,6 +4,17 @@
 #include <vector>
 using namespace std;
 
+int atoi(string val)
+{
+  uint16_t result = 0;
+  for (uint16_t i =0;i < val.size();i++)
+  {
+    result = result * 10;
+    result += (val[i]-'0');
+  }
+  return result;
+}
+
 void parse(vector<string> &lines, string f)
 {
   fstream file(f);
@@ -35,12 +46,28 @@ int main()
       {
         temp += ls[i][j];
       }
+      else if ((ls[i][j] == '\\' && ls[i][j+1] == '\\'))
+      {
+        j++;
+        temp += '\\';
+      }
+      else if (!(ls[i][j] == '\\' && ls[i][j+1] == '\"'))
+      {
+        j++;
+        temp += '\"';
+      }
+
     }
+    temp += ls[i][ls[i].size()-1];
     string final = "";
+    cout << ls[i] <<"\t"<<temp << endl;
     for (int j =0; j < temp.size()-1; j++)
     {
       if (temp[j]=='\\' && temp[j+1] =='x')
       {
+        int num = atoi(temp.substr(j+2,1))*16 + atoi(temp.substr(j+3,1));
+        char h = num;
+        final += h;
         j+=3;
       }
       else
@@ -48,7 +75,16 @@ int main()
         final+=temp[j];
       }
     }
-    //cout << ls[i].size() <<"\t" << final.size() << endl;
+    final+=temp[temp.size()-1];
+    cout << ls[i] <<"\t"<<final << endl;
+    temp = final;
+    final="";
+    for (int j=0; j < temp.size(); j++)
+    {
+      if (temp[j]!='"' || (j != 0 && j != temp.size()-1)) final+=temp[j];
+    }
+    cout << ls[i] <<"\t"<<final << endl;
+    cout << ls[i].size() <<"\t" << final.size() << endl;
     sum += (ls[i].size() - final.size());
   }
   cout << sum << endl;
