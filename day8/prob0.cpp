@@ -27,7 +27,6 @@ int main()
   int sum =0;
   for (int i =0; i < ls.size(); i++)
   {
-    sum += 2;
     string temp ="";
     for (int j =0; j < ls[i].size()-1; j++)
     {
@@ -40,7 +39,7 @@ int main()
     string final = "";
     for (int j =0; j < temp.size()-1; j++)
     {
-      if (temp[j]=='\\' && temp[j] =='x')
+      if (temp[j]=='\\' && temp[j+1] =='x')
       {
         j+=3;
       }
@@ -49,6 +48,7 @@ int main()
         final+=temp[j];
       }
     }
+    //cout << ls[i].size() <<"\t" << final.size() << endl;
     sum += (ls[i].size() - final.size());
   }
   cout << sum << endl;
