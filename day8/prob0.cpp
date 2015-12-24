@@ -63,7 +63,7 @@ int main()
     cout << ls[i] <<"\t"<<temp << endl;
     for (int j =0; j < temp.size()-1; j++)
     {
-      if (temp[j]=='\\' && temp[j+1] =='x')
+      if (temp[j]=='\\' && temp[j+1] =='x' && isdigit(temp[j+2]) && isdigit(temp[j+3]))
       {
         int num = atoi(temp.substr(j+2,1))*16 + atoi(temp.substr(j+3,1));
         char h = num;
