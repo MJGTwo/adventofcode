@@ -3,7 +3,13 @@
 #include <fstream>
 #include <vector>
 #include <locale>
+#include <utility>
+#include <map>
 using namespace std;
+
+typedef map< string, pair< vector<string>,string> > table;
+typedef pair<string, pair< vector<string>,string> > entry;
+
 
 vector<vector<string> > parse(string name)
 {
@@ -51,287 +57,165 @@ uint16_t atoi(string val)
   return result;
 }
 
-
-class Node
+string reverse(string str)
 {
-public:
-  Node(string n, uint16_t v): name(n),val(v)
+  string result = "";
+  for (int i =str.size()-1; i>=0; i--)
   {
-    next = NULL;
-    prev = NULL;
-    answer = true;
-    rule1 =NULL;
-    rule2 = NULL;
+    result += str[i];
   }
-  Node(string n, vector<string> relation): name(n)
-  {
-    if (relation.size() == 2)
-    {
-      op = relation[0];
-      info.push_back(relation[1]);
-      answer = false;
-    }
-    else if (relation.size() == 1)
-    {
-      string temp = relation[0];
-      if (isdigit(temp[0]))
-      {
-        val = atoi(temp);
-        answer = true;
-      }
-      else
-      {
-        op = "SAME";
-        info.push_back(temp);
-        answer = false;
-      }
-    }
-    else if (relation.size() == 3)
-    {
-      info.push_back(relation[0]);
-      info.push_back(relation[2]);
-      op = relation[1];
-      answer= false;
-    }
-    next = NULL;
-    prev = NULL;
-    rule1 = NULL;
-    rule2 = NULL;
-    //cout << "done!" << endl;
-  }
+  return result;
+}
 
-
-
-  string name;
-  uint16_t val;
-  vector<string> info;
-  string op;
-  Node *next;
-  Node *prev;
-  Node *rule1;
-  Node *rule2;
-
-  bool answer;
-
-};
-
-class LinkedNodes
+string itoa(uint16_t val)
 {
-public:
-  LinkedNodes():head(NULL),tail(head),size(0){}
-
-  ~LinkedNodes()
+  int i =0;
+  if (val == 0)
   {
-    tail->next = NULL;
-    head->prev = NULL;
-    del(head);
+    return "0";
   }
-
-  void add(Node *n)
+  string result="";
+  while (val != 0)
   {
-    if (size == 0)
-    {
-      head = tail = n;
-    }
-    else
-    {
-      tail->next = n;
-      n->prev = tail;
-      n->next = head;
-      head->prev = n;
-      tail = n;
-    }
-
-
-
-    size++;
+    uint16_t r = val % 10;
+    result += (r+'0');
+    val = val/10;
   }
+  return reverse(result);
 
-  void del(Node *n)
+}
+
+bool ops(string word)
+{
+  return (word == "AND"     ||
+          word == "OR"      ||
+          word == "RSHIFT"  ||
+          word == "LSHIFT"  ||
+          word == "NOT"     );
+}
+
+vector<string> convert(vector<string> info, string op)
+{
+  if (op == "SAME")
   {
-    if (n != NULL)
-    {
-      del(n->next);
-      delete n;
-      n = NULL;
-    }
+    return info;
   }
-  uint16_t num(){return size;}
-
-  void link()
+  else if (op == "NOT")
   {
-    Node * itr0 = head;
-    for (uint16_t i =0; i < size; i++)
-    {
-      //cout << i << endl;
-      if (!(itr0->answer))
-      {
-        //cout << itr0->op <<endl;
-        for (uint16_t j =0; j < (itr0->info).size(); j++)
-        {
-          //cout << "SIZE: " << size << endl;
-          string find = (itr0->info)[j];
-          //cout << itr0->name << " LOOKING FOR: " << find << endl;
-          Node * itr1 = head;
-          if (isdigit((itr0->info)[j][0]))
-          {
-            Node * n = new Node((itr0->info)[j],atoi((itr0->info)[j]));
-            cout <<"NAME: "<<(itr0->name)<< " VALUE: " << n->val << endl;
-
-            if (j == 0) itr0->rule1 = n;
-            else itr0->rule2 = n;
-          }
-          else
-          {
-            for (uint16_t k =0; k < size; k++)
-            {
-              //cout << (itr1->name) << endl;
-              if ((itr1->name) == find)
-              {
-                if (j == 0) itr0->rule1 = itr1;
-                else itr0->rule2 = itr1;
-                //if (j ==0 && i ==1) cout << "HERE: " <<itr1->name << endl;
-                break;
-              }
-              itr1 = itr1->next;
-            }
-          }
-
-        }
-      }
-      itr0= itr0->next;
-    }
+    uint16_t result = ~atoi(info[0]);
+    info[0] = itoa(result);
+    return info;
   }
-
-  void solve()
+  else if (op == "AND")
   {
-    bool change = true;
-    while (change)
-    {
-      change = false;
-      Node * itr = head;
-      uint16_t i=0;
-      while (i < size)
-      {
-        //cout << itr->name << "\t" << i << endl;
-        if (!(itr->answer))
-        {
-          //cout << "test0" << endl;
-          cout << itr->name << "\t" << itr->op << ":\t" <<(itr->rule1)->name;
-          if (itr->name == "e")
-          {
-            cout << "testtesttest " << (itr->rule1)->val << " " <<  (itr->rule2)->val << endl;
-          }
-          if (itr->op == "NOT" || itr->op == "RSHIFT" || itr->op == "LSIGHT")
-          {
-            //cout << "test1" << endl;
-            //cout << (itr->rule1)->answer << endl;
-            cout << endl;
-            if (itr->op == "NOT" && (itr->rule1)->answer)
-            {
-              //cout << "test2" << endl;
-
-              itr->val = ~((itr->rule1)->val);
-
-              itr->answer = true;
-            }
-            else if ((itr->rule1)->answer)
-            {
-              if (itr->op == "RSHIFT")
-              {
-                itr->val = ((itr->rule1)->val) >> (itr->rule2)->val;
-                itr->answer = true;
-              }
-              else
-              {
-                itr->val = ((itr->rule1)->val) << (itr->rule2)->val;
-                itr->answer = true;
-              }
-            }
-          }
-          else if (itr->op == "AND" && (itr->rule1)->answer && (itr->rule2)->answer)
-          {
-            cout << "\t" <<(itr->rule2)->name<<endl;
-            itr->val = (itr->rule1)->val & (itr->rule2)->val;
-            itr->answer = true;
-          }
-          else if (itr->op == "OR" && (itr->rule1)->answer && (itr->rule2)->answer)
-          {
-            cout << "\t" <<(itr->rule2)->name<<endl;
-            itr->val = (itr->rule1)->val | (itr->rule2)->val;
-            itr->answer = true;
-          }
-          else if (itr->op == "SAME" && (itr->rule1)->answer)
-          {
-            cout << endl;
-            itr->val = (itr->rule1)->val;
-            itr->answer = true;
-          }
-
-          if (itr->answer)
-          {
-            change = true;
-          }
-          else
-          {
-            cout << endl;
-          }
-        }
-
-        i++;
-        itr = itr->next;
-      }
-    }
-  }
-  uint16_t find(string name)
-  {
-    Node * finder = head;
-    for (uint16_t i =0; i < size; i++)
-    {
-      if (finder->name == name)
-      {
-        return finder->val;
-      }
-      finder=finder->next;
-    }
+    uint16_t result = atoi(info[0]) & atoi(info[1]);
+    info.pop_back();
+    info[0] = itoa(result);
+    return info;
 
   }
-  Node * start() const {return  head;}
-  Node * end() const {return tail;}
-
-private:
-  Node * head;
-  Node * tail;
-  uint16_t size;
-};
-
-
+  else if (op == "OR")
+  {
+    uint16_t result = atoi(info[0]) | atoi(info[1]);
+    info.pop_back();
+    info[0] = itoa(result);
+    return info;
+  }
+  else if (op == "RSHIFT")
+  {
+    uint16_t result = atoi(info[0]) >> atoi(info[1]);
+    info.pop_back();
+    info[0] = itoa(result);
+    return info;
+  }
+  else if (op == "LSHIFT")
+  {
+    uint16_t result = atoi(info[0]) << atoi(info[1]);
+    info.pop_back();
+    info[0] = itoa(result);
+    return info;
+  }
+}
 
 
 int main()
 {
   vector<vector<string> > rules = parse("input0.txt");
-  vector<string> names;
-  LinkedNodes l;
-  for (uint16_t i =0; i < rules.size(); i++)
+  table wires;
+  for (int i =0; i < rules.size(); i++)
   {
-    names.push_back(rules[i].back());
-    rules[i].pop_back();
-    l.add( new Node(names[i],rules[i]));
-  }
-  l.link();
-  l.solve();
-
-  Node * itr = l.start();
-  for (uint16_t i =0; i < l.num(); i++)
-  {
-    cout << itr->name << ":\t"<< itr->val <<endl;
-    itr=itr->next;
-    if (itr->name == "e")
+    string name;
+    vector<string> vals;
+    string op = "none";
+    for (int j =0; j < rules[i].size(); j++)
     {
-      cout << itr->op << " "<<(itr->rule2)->val<< endl;
+      if (j == rules[i].size()-1)
+      {
+        name = rules[i][j];
+      }
+      else if(ops(rules[i][j]))
+      {
+        op = rules[i][j];
+      }
+      else
+      {
+        vals.push_back(rules[i][j]);
+      }
+
     }
+    if (op == "none" && !isdigit(vals[0][0])) op = "SAME";
+    else if (op == "none") op = "NUM";
+    pair< vector<string>, string> p;
+    p.first = vals;
+    p.second = op;
+    wires.insert(entry(name,p));
   }
-  cout << "a: " << l.find("a") << endl;
+
+  bool change = true;
+  while (change){
+    change = !change;
+    for (table::iterator itr=wires.begin(); itr != wires.end(); ++itr)
+    {
+      //cout << itr->first << endl;
+
+
+
+      if ((itr->second).second == "NUM")
+      {
+        cout << (itr->first) << ":\t";
+        for (int i =0; i < (itr->second).first.size(); i++)
+        {
+          cout << ((itr->second).first)[i] << " ";
+        }
+        cout << endl;
+        for (table::iterator finder=wires.begin(); finder != wires.end(); ++finder)
+        {
+          pair<vector<string>, string> facts = finder->second;
+          vector<string> vals = facts.first;
+          for (int i =0; i < vals.size(); i++)
+          {
+            if (vals[i] == itr->first) vals[i] = ((itr->second).first)[0];
+          }
+          facts.first = vals;
+          finder->second = facts;
+          bool allnum = true;
+          for (int i=0;i < vals.size(); i++)
+          {
+            if (!isdigit(vals[i][0])) allnum=false;
+          }
+          if (allnum && (finder->second).second != "NUM")
+          {
+            change = true;
+            cout << (finder->second).second << endl;
+            facts.first = convert(vals,(finder->second).second);
+            finder->second = facts;
+            (finder->second).second = "NUM";
+          }
+        }
+      }
+    }
+    cout <<"*****************" << endl;
+  }
+  cout << ((wires.find("a")->second).first)[0] << endl;
 
 }
