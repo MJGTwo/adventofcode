@@ -132,7 +132,9 @@ int main()
   int count =0;
   int oldcount =cities.size();
   int sum =0;
-  for (map<int,pair<string,string> >::iterator itr = paths.begin(); itr != paths.end(); ++itr)
+  map<int,pair<string,string> >::iterator itr = paths.end();
+  --itr;
+  for (; itr != paths.begin(); --itr)
   {
     if (oldcount == numC) break;
     else oldcount=count;
