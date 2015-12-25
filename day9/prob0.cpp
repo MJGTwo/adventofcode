@@ -68,6 +68,59 @@ void parse(set<string> &cs, map<int,pair<string,string> > &ps)
   cout << "SIZE: " << ps.size() << endl;
 }
 
+class Node
+{
+public:
+  Node(string n): name(n) {;}
+
+
+
+  string name;
+  vector<pair<Node*,int> > ns;
+  Node * next;
+  Node * prev;
+};
+
+class Edges
+{
+public:
+  Edges():head(NULL),tail(NULL),count(0){;}
+  Edges(Node n)
+  {
+    head = tail = &n;
+    count++;
+  }
+  Edges(Node *n)
+  {
+    head = tail = n;
+    count++;
+  }
+  ~Edges()
+  {
+    Node * n= head;
+    while(n->next)
+    {
+      del(head);
+      head = n;
+      n=n->next;
+    }
+  }
+
+
+  int size() const {return count;}
+
+private:
+  void del(Node *n)
+  {
+    delete n;
+    n = NULL;
+    count--;
+  }
+  Node *head;
+  Node *tail;
+  int count;
+};
+
 int main()
 {
   set<string> cities;
@@ -78,6 +131,7 @@ int main()
   cities.clear();
   int count =0;
   int oldcount =cities.size();
+  int sum =0;
   for (map<int,pair<string,string> >::iterator itr = paths.begin(); itr != paths.end(); ++itr)
   {
     if (oldcount == numC) break;
@@ -90,7 +144,11 @@ int main()
     {
       cout << itr->first << ":\t" << (itr->second).first << ", " << (itr->second).second<< endl;
       used.insert(*itr);
+      sum += itr->first;
     }
   }
   cout << count << endl;
+  cout << sum << endl;
+
+
 }
