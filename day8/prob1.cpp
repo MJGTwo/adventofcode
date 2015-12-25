@@ -47,51 +47,29 @@ int main()
   int sum =0;
   for (int i =0; i < ls.size(); i++)
   {
-    string temp ="";
-    for (int j =0; j < ls[i].size()-1; j++)
+    int start = ls[i].size();
+    string line = ls[i];
+    string expand = "\"";
+    for (int j=0; j < line.size();j++)
     {
-      if (!(ls[i][j] == '\\' && ls[i][j+1] == '\\') &&
-          !(ls[i][j] == '\\' && ls[i][j+1] == '\"'))
+      if (line[j] == '\\' )
       {
-        temp += ls[i][j];
+        expand+='\\';
+        expand+='\\';
       }
-      else if ((ls[i][j] == '\\' && ls[i][j+1] == '\\'))
+      else if (line[j] == '\"')
       {
-        j++;
-        temp += '\\';
-      }
-      else if (!(ls[i][j] == '\\' && ls[i][j+1] == '\"'))
-      {
-        j++;
-        temp += '\"';
-      }
-
-    }
-    temp += ls[i][ls[i].size()-1];
-    string final = "";
-    for (int j =0; j < temp.size()-1; j++)
-    {
-      if (temp[j]=='\\' && temp[j+1] =='x' && ishexd(temp[j+2])&& ishexd(temp[j+3]))
-      {
-        int num = atoi(temp.substr(j+2,1))*16 + atoi(temp.substr(j+3,1));
-        char h = num;
-        final += h;
-        j+=3;
+        expand += '\\';
+        expand += '\"';
       }
       else
       {
-        final+=temp[j];
+        expand += line[j];
       }
     }
-    final+=temp[temp.size()-1];
-    temp = final;
-    final="";
-    for (int j=0; j < temp.size(); j++)
-    {
-      if (temp[j]!='"' || (j != 0 && j != temp.size()-1)) final+=temp[j];
-    }
-
-    sum += (ls[i].size() - final.size());
+    expand+="\"";
+    //cout << start << "\t" << expand << endl;
+    sum += (expand.size() - start);
   }
   cout << sum << endl;
 }
