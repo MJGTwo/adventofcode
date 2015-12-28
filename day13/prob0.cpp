@@ -10,16 +10,16 @@ class Person
   friend class Table;
 
 public:
-  Person(): left(NULL),right(NULL){;}
-  Person(string n): name(n), left(NULL), right(NULL) {;}
+  Person(): mLeft(NULL),mRight(NULL){;}
+  Person(string n): mName(n), mLeft(NULL), mRight(NULL) {;}
   Person(const Person &othr)
   {
-    this->name  = othr.name;
-    this->left  = othr.left;
-    this->right = othr.right;
+    this->mName  = othr.mName;
+    this->mLeft  = othr.mLeft;
+    this->mRight = othr.mRight;
     for (int i=0; i < othr.size(); i++)
     {
-      this->relation.push_back(othr.relation[i]);
+      this->mRelation.push_back(othr.mRelation[i]);
     }
   }
 
@@ -33,39 +33,40 @@ public:
     pair<string, int> p;
     p.first = n;
     p.second = happy;
-    relation.push_back(p);
+    mRelation.push_back(p);
   }
-  const int size() const {return relation.size();}
-  string getName()const{return name;}
+
+  const int size() const {return mRelation.size();}
+  string name()const{return mName;}
 
 private:
-  string name;
-  vector<pair<string, int> > relation;
-  Person* left;
-  Person* right;
+  string mName;
+  vector<pair<string, int> > mRelation;
+  Person* mLeft;
+  Person* mRight;
 
 };
 
 class Table
 {
 public:
-  Table(int s): chairs(s),seated(0)
+  Table(int s): mChairs(s),mSeated(0)
   {
-    family = new Person[s];
+    mFamily = new Person[s];
   }
 
   bool seatPerson(Person p)
   {
-    family[seated++] = p;
+    mFamily[mSeated++] = p;
     return true;
   }
 
-  int size(){return seated;}
+  int size(){return mSeated;}
 
 private:
-  int chairs;
-  int seated;
-  Person *family;
+  int mChairs;
+  int mSeated;
+  Person *mFamily;
 };
 
 int atoi(string val)
@@ -79,11 +80,10 @@ int atoi(string val)
   return result;
 }
 
-void parse(string file, vector<Person> people)
+void parse(string file, vector<Person> &people)
 {
   fstream f(file);
   string line;
-  string caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   if(f.is_open())
   {
     while(getline(f,line))
@@ -92,64 +92,49 @@ void parse(string file, vector<Person> people)
       string other = "";
       string num = "";
       string word="";
-      bool first = false;
-      bool second = false;
+      int wordCount=0;
       bool neg = false;
       for(int i =0; i < line.size(); i++)
       {
         char let = line[i];
-        word += let;
-
-        if (word == "lose")
+        if (let == ' ' || let == '.')
         {
-          neg = true;
-        }
-        else if (word == "gain")
-        {
-          neg = false;
-        }
-        if (let != ' ' && first)
-        {
-          name += let;
-        }
-        else if (let != ' ' && second)
-        {
-          other += let;
-        }
-        else if (let == ' ')
-        {
-          first = second = false;
-          word ="";
+          wordCount++;
+          if (wordCount == 1)
+          {
+            name = word;
+          }
+          else if (wordCount == 3 && word == "lose")
+          {
+            neg = true;
+          }
+          else if (wordCount == 4)
+          {
+            num = word;
+          }
+          else if (wordCount == 11)
+          {
+            other = word;
+          }
         }
         else
         {
-          for (int j =0; j < caps.size(); j++)
-          {
-            if (let == caps[j] && name == "")
-            {
-              name += let;
-              first = true;
-            }
-            if (let == caps[j] && name != "" && other == "")
-            {
-              other += let;
-              second = true;
-            }
-          }
+          word += let;
         }
       }
       Person p(name);
       int k =0;
       for (; k < people.size(); k++)
       {
-        if (name == people[k].getName())
+        if (name == people[k].name())
         {
           p = people[k];
           break;
         }
       }
       p.add(other,atoi(num));
-      people[k]=p;
+      if (k == people.size()) people.push_back(p);
+      else people[k]=p;
 
     }
   }
@@ -163,6 +148,6 @@ int main()
   parse("input0.txt",people);
   for (int i=0; i< people.size(); i++)
   {
-    cout << people[i].getName() << endl;
+    cout << people[i].name() << endl;
   }
 }
