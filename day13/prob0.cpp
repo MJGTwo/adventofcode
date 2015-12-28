@@ -5,13 +5,15 @@
 #include <vector>
 using namespace std;
 
+int atoi(string val);
+
 class Person
 {
   friend class Table;
 
 public:
-  Person(): mLeft(NULL),mRight(NULL){;}
-  Person(string n): mName(n), mLeft(NULL), mRight(NULL) {;}
+  Person(): mLeft(NULL),mRight(NULL),mMax(0){;}
+  Person(string n): mName(n), mLeft(NULL), mRight(NULL),mMax(0) {;}
   Person(const Person &othr)
   {
     this->mName  = othr.mName;
@@ -28,22 +30,33 @@ public:
     return Person(othr);
   }
 
-  void add(string n, int happy)
+  void add(string n, string happy)
   {
-    pair<string, int> p;
-    p.first = n;
-    p.second = happy;
-    mRelation.push_back(p);
+    if (mRelation.size() ==0) mMax =0;
+    else if (atoi(happy) > atoi(mRelation[mMax][1])) mMax = mRelation.size();
+    vector<string> info;
+    info.push_back(n);
+    info.push_back(happy);
+    info.push_back("0");
+    mRelation.push_back(info);
   }
 
   const int size() const {return mRelation.size();}
   string name()const{return mName;}
+  pair<string,string>* ideal() const
+  {
+    pair<string,string>* p = new pair<string,string>;
+    p->first = (mRelation[mMax][0]);
+    p->second = (mRelation[mMax][1]);
+    return p;
+  }
 
 private:
   string mName;
-  vector<pair<string, int> > mRelation;
+  vector<vector<string> > mRelation;
   Person* mLeft;
   Person* mRight;
+  int mMax;
 
 };
 
@@ -132,7 +145,7 @@ void parse(string file, vector<Person> &people)
           break;
         }
       }
-      p.add(other,atoi(num));
+      p.add(other,num);
       if (k == people.size()) people.push_back(p);
       else people[k]=p;
 
@@ -146,8 +159,10 @@ int main()
 {
   vector<Person> people;
   parse("input0.txt",people);
+  Person* itr = &people[0];
   for (int i=0; i< people.size(); i++)
   {
     cout << people[i].name() << endl;
   }
+
 }
