@@ -9,14 +9,17 @@ num = False
 word = ""
 obj = False
 red = False
-for let in f:
+for i in range(len(f)-2):
+    let = f[i]
+    r = f[i] + f[i+1]+f[i+2]
     if not red:
         if let == "{":
             obj = True
         elif let == "}":
             obj = False
-        if obj and let == "red":
+        if obj and r == "red":
             red = True
+            continue
         if (let.isdigit()):
             word += let
         elif (let == '-'):
