@@ -1,5 +1,5 @@
 // mod d1;
-mod d2;
+mod d3;
 mod util;
 // use std::env;
 // use std::fs;
@@ -12,6 +12,6 @@ fn main() {
     //     .expect("Should have been able to read the file");
 
     // println!("With text:\n{contents}");
-    d2::run();
+    d3::run();
 
 }
